@@ -1,37 +1,55 @@
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) throws IOException {
-        List<Vezen> vezni = new ArrayList<>();
-        Path soubor = Path.of("data", "vezni_testovaci_data.txt");
-        if (!Files.exists(soubor.getParent())) {
-            Files.createDirectories(soubor.getParent());
-        }
-        int pocetRadku = 0;
-        try {
-            // Otevření BufferedWriter v try-with-resources
-            try (BufferedReader reader = Files.newBufferedReader(soubor))
-            {
-                String[] radky = reader.lines().toArray(String[]::new);
-                pocetRadku = radky.length;
-                for (int i = 0; i < pocetRadku; i++) {
-                    String[] hodnoty = radky[i].split(";");
-                    vezni.add(new Vezen(hodnoty[0], hodnoty[1], hodnoty[2], hodnoty[3], hodnoty[4], hodnoty[5], hodnoty[6], hodnoty[7]));
+    public static void main(String[] args) {
+        List<Vezen> platniVezni = new ArrayList<>();
+        Validator validator = new Validator();
+        String cestaKeSouboru = "data/vezni_testovaci_data.txt";
+
+        System.out.println("=== načítání a validace vězňů ===");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(cestaKeSouboru))) {
+            String radek;
+            int cisloRadku = 1;
+
+            while ((radek = br.readLine()) != null) {
+                System.out.println("\n[Řádek " + cisloRadku + "] " + radek);
+
+                if (validator.jePlatnyRadek(radek)) {
+                    System.out.println("=> VÝSLEDEK: VALIDNÍ");
+
+                    String[] udaje = radek.split(";");
+                    Vezen vezen = new Vezen(
+                            udaje[0].trim(),
+                            udaje[1].trim(),
+                            udaje[2].trim(),
+                            udaje[3].trim(),
+                            udaje[4].trim(),
+                            udaje[5].trim(),
+                            udaje[6].trim(),
+                            udaje[7].trim()
+                    );
+                    platniVezni.add(vezen);
+                } else {
+                    System.out.println("=> VÝSLEDEK: NEVALIDNÍ");
                 }
+                cisloRadku++;
             }
-            for (int i = 0; i < vezni.size(); i++) {
-                System.out.println(vezni.get(i).toString());
-            }
+
         } catch (IOException e) {
-            System.out.println("Chyba při čtení souboru:");
-            e.printStackTrace();
+            System.out.println("Chyba při čtení souboru: " + e.getMessage());
+        }
+
+        // Výpis výsledků na konci
+        System.out.println("\n=================================");
+        System.out.println("SEZNAM PLATNÝCH VĚZŇŮ (Příjmení + Rok narození):");
+        System.out.println("=================================");
+        for (Vezen v : platniVezni) {
+            System.out.println("Příjmení: " + v.getPrijmeni() + " | Rok narození: " + v.getRokNarozeni());
         }
     }
 }
