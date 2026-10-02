@@ -20,7 +20,7 @@ public class Main {
                 System.out.println("\n[Řádek " + cisloRadku + "] " + radek);
 
                 if (validator.jePlatnyRadek(radek)) {
-                    System.out.println("=> VÝSLEDEK: VALIDNÍ");
+                    System.out.println("VÝSLEDEK: VALIDNÍ");
 
                     String[] udaje = radek.split(";");
                     Vezen vezen = new Vezen(

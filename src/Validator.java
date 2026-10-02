@@ -48,7 +48,13 @@ public class Validator {
         } else {
             try {
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d.M.yyyy");
-                LocalDate.parse(datum, dtf);
+                LocalDate datumNarozeni = LocalDate.parse(datum, dtf);
+
+                // Kontrola, zda datum není v budoucnosti
+                if (datumNarozeni.isAfter(LocalDate.now())) {
+                    System.out.println("Datum narození nemůže být v budoucnosti: " + datum);
+                    jeVseOk = false;
+                }
             } catch (Exception e) {
                 System.out.println("Neexistující datum v kalendáři: " + datum);
                 jeVseOk = false;
